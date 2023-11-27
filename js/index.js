@@ -1,9 +1,13 @@
 //Hecho por: Martín Pereira.
 const fullList = `https://pokeapi.co/api/v2/pokemon?limit=151&offset=0`;//Rojo Fuego, Azul Marino, Verde Hoja.
 document.addEventListener('DOMContentLoaded', ()=>{
+    let logout = document.getElementById('salir');
+    verificarConexion();
+
     fetch(fullList)
     .then(response=> response.json())
     .then(data=>{
+        checkToken();
         displayList(data.results);
         //console.log(data.results);
     })
@@ -13,6 +17,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
         document.body.appendChild(errorMessage);
         console.log(error);
     })
+    //Desconexion
+    logout.addEventListener('click', ()=>{
+        localStorage.removeItem('Usuario');
+        verificarConexion();
+    })
     //Añado la imagen de fondo con metodo js.
     document.getElementById('body').style.backgroundImage= 'url(img/fondo01.webp)';//intento 4.
 })
@@ -21,6 +30,7 @@ function searchPo(url){
     fetch(url)
     .then(response=> response.json())
     .then(data=>{
+        checkToken();
         showPo(data)
     })
 }
@@ -71,6 +81,7 @@ document.getElementById('add').addEventListener('click', ()=>{
 })
 //Remueve un pokémon de la lista.
 function removeP(id){
+    checkToken();
     let item = document.getElementById(id);
     item.remove();
     counterT-=1;
@@ -85,6 +96,7 @@ sendBtn.addEventListener('click', ()=>{
     let date = document.getElementById('date');
     //Compruebo que los campos no sean null.
     if(name.value!=""&&lastname.value!=""&&date.value!=""){
+        checkToken();
         sendData(URL_Post);
         //console.log("Hay datos para enviar: "+"nombre: "+name.value+". apellido: "+lastname.value+". fecha: "+date.value);
         name.value= null;
@@ -125,5 +137,35 @@ function returnData(data){
         <p>Fecha de nacimiento: ${data.fecha_de_nacimiento}</p>
     </div>
     `
+}
+//Login check
+function verificarConexion(){
+    if(localStorage.getItem('Usuario')){
+        let user = document.getElementById('user');
+        user.innerHTML= localStorage.getItem('Usuario');
+    }else{
+        localStorage.clear();
+        window.location.href = "login.html";
+    }
+}
+//Verificar valides del token
+function checkToken(){
+    let TOKEN = localStorage.getItem('Token');
+
+    fetch('http://localhost:3000/verify', {
+        method: 'GET',
+        headers: {'access-token': TOKEN}
+    })
+    .then(response=> response.json())
+    .then(data=> {
+        disconectForced(data);
+    })
+}
+function disconectForced(data){
+    if(data.status === "no"){
+        localStorage.clear();
+        alert(data.message + " Seras desconectado");
+        window.location.href = "login.html";
+    }
 }
 //Hecho por: Martín Pereira.

@@ -1,0 +1,10 @@
+CREATE TABLE `registro` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`user` VARCHAR(20) NOT NULL COLLATE 'latin1_swedish_ci',
+	`password` VARCHAR(40) NOT NULL COLLATE 'latin1_swedish_ci',
+	PRIMARY KEY (`id`) USING BTREE
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=24
+;
